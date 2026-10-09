@@ -63,3 +63,13 @@ export default async (request) => {
     );
   }
 };
+
+export const config = {
+  path: "/.netlify/functions/verify",
+  rateLimit: {
+    windowLimit: 20,
+    windowSize: 60,
+    aggregateBy: ["ip", "domain"]
+  }
+};
+
