@@ -9,6 +9,10 @@
     <title>Contact | Gamingera</title>
     <link rel="icon" href="assets/images/logo.png" type="image/svg+xml">
     <link rel="stylesheet" href="assets/css/style.css">
+    <script
+  src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+  async defer>
+</script>
 </head>
 
 <body>
@@ -46,6 +50,10 @@
                     <p><strong>Typical topics</strong><br>Website feedback · Editorial suggestions · General questions
                     </p>
                 </aside>
+                <div
+  class="cf-turnstile"
+  data-sitekey="0x4AAAAAAFSK0W-uIRVaW1uU">
+</div>
                 <form class="contact-form" data-contact-form>
                     <h3>Send a message</h3>
                     <p class="muted">All fields are required.</p>
@@ -67,6 +75,53 @@
                     <p class="form-message" data-form-message>Clicking the button opens your email application; it does
                         not submit data to this website.</p>
                 </form>
+
+                <button type="button" id="verify-human">
+  Verify Human
+</button>
+
+<p id="verify-result"></p>
+
+<script>
+document.getElementById("verify-human")
+  .addEventListener("click", async () => {
+    const result = document.getElementById("verify-result");
+    const token = document.querySelector(
+      '[name="cf-turnstile-response"]'
+    )?.value;
+
+    if (!token) {
+      result.textContent = "Complete verification first.";
+      return;
+    }
+
+    result.textContent = "Checking...";
+
+    try {
+      const response = await fetch(
+        "/.netlify/functions/verify",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ token })
+        }
+      );
+
+      const data = await response.json();
+
+      result.textContent = data.success
+        ? "Verification successful!"
+        : "Verification failed. Please try again.";
+
+    } catch {
+      result.textContent = "Server error.";
+    }
+
+    window.turnstile?.reset();
+  });
+</script>
             </div>
         </section>
     </main>
@@ -99,6 +154,7 @@
             <div class="footer-bottom"><span>© 2026 Gamingera. All rights reserved.</span><span>Independent gaming
                     information website · <a href="cookies.html">Cookie choices</a></span></div>
         </div>
+        
     </footer>
     <script src="assets/js/main.js" defer></script>
 </body>
